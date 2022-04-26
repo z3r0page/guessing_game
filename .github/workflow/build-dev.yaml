@@ -1,0 +1,29 @@
+on:
+  push:
+    branches:
+      - "*"
+
+jobs:
+  BuildDev:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v1
+      - name: Get Changed Files
+        id: changed-files
+        uses: jitterbit/get-changed-files@v1
+      - name: Release Details
+        id: release-details
+        run: |
+          echo "Release details: "
+          echo ${{ github.event.release.name }}
+          echo ${{ github.event.release.body }}
+          echo "Release Tag: ${GITHUB_REF:10}"
+      - name: Change File details
+        id: changed-file-details
+        run: |
+          echo "Changed files: "
+          for file in ${{ steps.changed-files.outputs.all }}
+          do
+            echo ${file}
+          done
