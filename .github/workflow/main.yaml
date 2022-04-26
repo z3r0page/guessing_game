@@ -12,6 +12,12 @@ jobs:
       - name: Get Changed Files
         id: changed-files
         uses: jitterbit/get-changed-files@v1
+      - uses: cardinalby/git-get-release-action@v1
+        id: get-release
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          latest: 1
       - name: Release Details
         id: release-details
         run: |
@@ -19,6 +25,7 @@ jobs:
           echo ${{ github.event.release.name }}
           echo ${{ github.event.release.body }}
           echo "Release Tag: ${GITHUB_REF:10}"
+          echo ${{ steps.get-release.outputs.body }}
       - name: Change File details
         id: changed-file-details
         run: |
