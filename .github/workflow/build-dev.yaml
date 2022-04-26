@@ -18,6 +18,7 @@ jobs:
           echo "Release details: "
           echo ${{ github.event.release.name }}
           echo ${{ github.event.release.body }}
+          echo "Release Tag: ${GITHUB_REF:10}"
       - name: Change File details
         id: changed-file-details
         run: |
