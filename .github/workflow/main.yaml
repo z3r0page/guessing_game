@@ -25,7 +25,7 @@ jobs:
           echo ${{ github.event.release.name }}
           echo ${{ github.event.release.body }}
           echo "Release Tag: ${GITHUB_REF:10}"
-          echo ${{ steps.get-release.outputs.body }}
+          echo -e ${{ steps.get-release.outputs.body }}
       - name: Change File details
         id: changed-file-details
         run: |
