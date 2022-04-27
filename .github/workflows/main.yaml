@@ -38,7 +38,7 @@ jobs:
         id: changed-file-details
         run: |
           echo "Changed files: "
-          all_files=(${{ steps.get-release.outputs.all }})
+          all_files=($(${{ steps.changed-files.outputs.all }}))
           for file in ${all_files[@]}
           do
             echo $file
