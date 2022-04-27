@@ -34,12 +34,19 @@ jobs:
           do
             echo $cron
           done
-      - name: Change File details
-        id: changed-file-details
+      - name: Changed folders 
+        id: changed-folders
         run: |
-          echo "Changed files: "
+          echo "Changed folders: "
           all_files=(${{ steps.changed-files.outputs.all }})
+          updated=()
           for file in ${all_files[@]}
           do
-            echo $file
+            updated+=($file)
           done
+        echo "::set-output name=updated::${updated[@]}"
+      - name: Access Changed Folders
+        id: access-changed-folders
+        run: |
+          echo "Accessing changed folders"
+          echo "${{ steps.changed-folders.outputs.updated }}"
