@@ -16,6 +16,8 @@ jobs:
         id: get-release
         with:
           latest: 1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
       - name: Generate new version number
         id: gen_new_version
         run: |
