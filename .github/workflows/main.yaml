@@ -44,7 +44,7 @@ jobs:
           do
             updated+=($file)
           done
-        echo "::set-output name=updated::${updated[@]}"
+          echo "::set-output name=updated::${updated[@]}"
       - name: Access Changed Folders
         id: access-changed-folders
         run: |
