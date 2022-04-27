@@ -34,19 +34,28 @@ jobs:
           do
             echo $cron
           done
-      - name: Changed folders 
+      - name: Changed folders
         id: changed-folders
         run: |
           echo "Changed folders: "
           all_files=(${{ steps.changed-files.outputs.all }})
           updated=()
-          for file in ${all_files[@]}
+          for x in ${all_files[@]}
           do
-            updated+=($file)
+            rd=$(echo $x | cut -f1 -d/)
+            if [[ $rd != ".github" ]] && [[ -d $d ]]
+            then
+              updated+=($rd)
+            fi
           done
           echo "::set-output name=updated::${updated[@]}"
       - name: Access Changed Folders
         id: access-changed-folders
         run: |
           echo "Accessing changed folders"
-          echo "${{ steps.changed-folders.outputs.updated }}"
+          updated=(${{ steps.changed-folders.outputs.updated }})
+          for file in ${updated[@]}
+          do
+            updated+=($file)
+          done
+
