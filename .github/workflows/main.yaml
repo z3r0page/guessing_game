@@ -57,6 +57,6 @@ jobs:
           updated=(${{ steps.changed-folders.outputs.updated }})
           for file in ${updated[@]}
           do
-            updated+=($file)
+            echo "$file"
           done
 
