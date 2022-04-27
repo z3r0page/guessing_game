@@ -9,25 +9,31 @@ jobs:
     steps:
       - name: Git Checkout
         uses: actions/checkout@v1
+      - name: Get Changed Files
+        id: changed-files
+        uses: jitterbit/get-changed-files@v1
       - uses: cardinalby/git-get-release-action@v1
         id: get-release
-        env:
-          GITHUB_TOKEN: "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"
         with:
           latest: 1
+      - name: Generate new version number
+        id: gen_new_version
+        run: |
+          echo "::set-output name=newversion::$(date +'%y.%m.%d%H%M' | sed 's/.$/0/')"
+          echo "Will apply the following version: $VERSION"
       - name: Release Details
         id: release-details
         run: |
           echo "Release details: "
-          # echo ${{ github.event.release.name }}
-          # echo ${{ github.event.release.body }}
           echo "Release Tag: ${GITHUB_REF:10}"
-          echo ${{ steps.get-release.outputs.body }}
+          echo "${{ steps.get-release.outputs.body }}"
+          array=($(echo "${{ steps.get-release.outputs.body }}" | tr "," " "))
+          for cron in ${array[@]}
+          do
+            echo $cron
+          done
       - name: Change File details
         id: changed-file-details
         run: |
           echo "Changed files: "
-          # for file in ${{ steps.changed-files.outputs.all }}
-          # do
-          #   echo ${file}
-          # done
+          echo "${{ steps.get-release.outputs.all }}
