@@ -16,6 +16,7 @@ jobs:
         id: get-release
         with:
           prerelease: true
+          releaseNameRegEx: "pre-*"
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Generate new version number
