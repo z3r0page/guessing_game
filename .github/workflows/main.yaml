@@ -15,7 +15,7 @@ jobs:
       - uses: cardinalby/git-get-release-action@v1
         id: get-release
         with:
-          prerelease: 1
+          prerelease: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
       - name: Generate new version number
