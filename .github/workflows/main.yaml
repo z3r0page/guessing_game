@@ -1,0 +1,127 @@
+on:
+  push:
+    branches:
+      - dev
+
+jobs:
+  BuildDev:
+    runs-on: ubuntu-latest
+    outputs:
+      newversion: ${{ steps.gen_new_version.outputs.newversion }}
+      branch_name: ${{ steps.release-details.outputs.branch_name}}
+      new_release_string: ${{ steps.release-details.outputs.new_release_string }}
+    steps:
+      - name: Git Checkout
+        uses: actions/checkout@v1
+      - name: Get Changed Files
+        id: changed-files
+        uses: jitterbit/get-changed-files@v1
+      - uses: cardinalby/git-get-release-action@v1
+        id: get-release
+        with:
+          prerelease: true
+          releaseNameRegEx: "pre-*"
+          doNotFailIfNotFound: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Generate new version number
+        id: gen_new_version
+        run: |
+          version=$(date +'%y.%m.%d%H%M' | sed 's/.$/0/')
+          echo "::set-output name=newversion::${version}"
+          echo "Will apply the following version: $version"
+      - name: Changed folders
+        id: changed-folders
+        run: |
+          echo "Changed folders: "
+          all_files=(${{ steps.changed-files.outputs.all }})
+          updated=()
+          for x in ${all_files[@]}
+          do
+            rd=$(echo $x | cut -f1 -d/)
+            if [[ $rd != ".github" ]] && [[ -d $rd ]]
+            then
+              updated+=($rd)
+            fi
+          done
+          echo "${updated[@]}"
+          echo "::set-output name=updated::${updated[@]}"
+      - name: Release Details
+        id: release-details
+        run: |
+          echo "Release details: "
+          echo "Release Tag: ${GITHUB_REF_NAME}"
+          echo "::set-output name=branch_name::${GITHUB_REF_NAME}"
+          echo "${{ steps.get-release.outputs.body }}"
+          array=($(echo "${{ steps.get-release.outputs.body }}" | tr "," " "))
+          for cron in ${array[@]}
+          do
+            echo $cron
+          done
+          echo "Setting release body"
+          updated=(${{ steps.changed-folders.outputs.updated }})
+          release_string=()
+          for cron in ${array[@]}
+          do
+            cron_name=$(echo $cron | cut -d: -f1)
+            cron_ver=$(echo $cron | cut -d: -f2)
+              if [[ ! ${updated[*]} =~ $cron_name ]]; then
+                release_string+=("${cron_name}:${cron_ver}")
+              fi
+          done
+          for cron in ${updated[*]}
+          do
+            release_string+=("${cron}:${{ steps.gen_new_version.outputs.newversion }}")
+          done
+
+          echo "Old release body: ${array[*]}"
+          echo "New release body: ${release_string[*]}"
+          new_release_string=$(IFS=, ; echo "${release_string[*]}")
+          echo "::set-output name=new_release_string::${new_release_string}"
+
+      - name: Access Changed Folders
+        id: access-changed-folders
+        if: ${{ needs.BuildDev.outputs.updated }}
+        run: |
+          echo "Accessing changed folders"
+          updated=(${{ steps.changed-folders.outputs.updated }})
+          for file in ${updated[@]}
+          do
+            echo "$file"
+          done
+          echo "Updated versions"
+      - name: Build OCI
+        id: build_oci
+        if: ${{ needs.BuildDev.outputs.updated }}
+        run: |
+            updated=(${{ steps.changed-folders.outputs.updated }})
+            version=${{ steps.gen_new_version.outputs.newversion }}
+            for cron in ${updated[@]}
+            do
+              echo "Building image: ${cron}:${version}"
+            done
+
+
+  CreateGitHubRelease:
+    name: Release ${{ github.event.repository.name }} to GitHub
+    needs: BuildDev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code for GitHub release
+        uses: actions/checkout@v1
+        id: checkout
+
+      - name: Release ${{ github.event.repository.name }} to GitHub
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: "pre-${{ needs.BuildDev.outputs.newversion }}"
+          commitish: "${{ needs.BuildDev.outputs.branch_name }}"
+          release_name: "pre-${{ needs.BuildDev.outputs.newversion }}"
+          prerelease: true
+          body: "${{ needs.BuildDev.outputs.new_release_string }}"
+          draft: false
+        if: ${{ needs.BuildDev.outputs.updated }}
+
