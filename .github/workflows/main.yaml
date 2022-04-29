@@ -121,4 +121,5 @@ jobs:
           prerelease: true
           body: "${{ needs.BuildDev.outputs.new_release_string }}"
           draft: false
+        if: ${{ needs.BuildDev.outputs.updated }}
 
