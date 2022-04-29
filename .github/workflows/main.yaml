@@ -6,6 +6,9 @@ on:
 jobs:
   BuildDev:
     runs-on: ubuntu-latest
+    outputs:
+      newversion: ${{ steps.gen_new_version.outputs.newversion }}
+      branch_name: ${{ GITHUB_REF_NAME }}
     steps:
       - name: Git Checkout
         uses: actions/checkout@v1
@@ -60,4 +63,27 @@ jobs:
           do
             echo "$file"
           done
+
+  CreateGitHubRelease:
+    name: Release ${{ github.event.repository.name }} to GitHub
+    needs: BuildDev
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code for GitHub release
+        uses: actions/checkout@v1
+        id: checkout
+
+      - name: Release ${{ github.event.repository.name }} to GitHub
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        with:
+          tag_name: "pre-${{ needs.BuildReleaseOCI.outputs.newversion }}"
+          commitish: ${{ needs.BuildReleaseOCI.outputs.branch_name }}
+          release_name: "pre-${{ needs.BuildReleaseOCI.outputs.newversion }}"
+          prerelease: true
+          body: |
+            metric:v0.0.9,focus:v0.0.5,sync_sfdc:v0.0.14
+          draft: false
 
