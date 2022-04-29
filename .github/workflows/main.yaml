@@ -9,6 +9,7 @@ jobs:
     outputs:
       newversion: ${{ steps.gen_new_version.outputs.newversion }}
       branch_name: ${{ steps.release-details.outputs.branch_name}}
+      new_release_string: ${{ steps.release-details.outputs.new_release_string }}
     steps:
       - name: Git Checkout
         uses: actions/checkout@v1
@@ -71,8 +72,10 @@ jobs:
             release_string+=("${cron}:${{ steps.gen_new_version.outputs.newversion }}")
           done
 
-          echo "Old release body: ${array[@]}"
-          echo "New release body: ${release_string[@]}"
+          echo "Old release body: ${array[*]}"
+          echo "New release body: ${release_string[*]}"
+          new_release_string=$(IFS=, ; echo "${release_string[*]}")
+          echo "::set-output name=new_release_string::${new_release_string}"
 
       - name: Access Changed Folders
         id: access-changed-folders
@@ -114,7 +117,6 @@ jobs:
           commitish: "${{ needs.BuildDev.outputs.branch_name }}"
           release_name: "pre-${{ needs.BuildDev.outputs.newversion }}"
           prerelease: true
-          body: |
-            metric:v0.0.9,focus:v0.0.5,sync_sfdc:v0.0.14
+          body: "${{ needs.BuildDev.outputs.new_release_string }}"
           draft: false
 
