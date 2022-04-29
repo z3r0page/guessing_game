@@ -27,8 +27,9 @@ jobs:
       - name: Generate new version number
         id: gen_new_version
         run: |
-          echo "::set-output name=newversion::$(date +'%y.%m.%d%H%M' | sed 's/.$/0/')"
-          echo "Will apply the following version: $VERSION"
+          version=$(date +'%y.%m.%d%H%M' | sed 's/.$/0/')
+          echo "::set-output name=newversion::${version}"
+          echo "Will apply the following version: $version"
       - name: Changed folders
         id: changed-folders
         run: |
