@@ -79,7 +79,7 @@ jobs:
           GITHUB_TOKEN: ${{ github.token }}
         with:
           tag_name: "pre-${{ needs.BuildReleaseOCI.outputs.newversion }}"
-          commitish: "${GITHUB_REF_NAME}"
+          commitish: "${{ GITHUB_REF_NAME }}"
           release_name: "pre-${{ needs.BuildDev.outputs.newversion }}"
           prerelease: true
           body: |
