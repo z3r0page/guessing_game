@@ -8,7 +8,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       newversion: ${{ steps.gen_new_version.outputs.newversion }}
-      branch_name: ${{ GITHUB_REF_NAME }}
+      branch_name: $GITHUB_REF_NAME
     steps:
       - name: Git Checkout
         uses: actions/checkout@v1
