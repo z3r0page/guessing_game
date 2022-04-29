@@ -84,8 +84,8 @@ jobs:
           done
           echo "Updated versions"
       - name: Build OCI
-          id: build_oci
-          run: |
+        id: build_oci
+        run: |
             updated=(${{ steps.changed-folders.outputs.updated }})
             version=${{ steps.gen_new_version.outputs.newversion }}
             for cron in ${updated[@]}
