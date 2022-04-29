@@ -44,8 +44,9 @@ jobs:
               updated+=($rd)
             fi
           done
-          echo "${updated[@]}"
-          echo "::set-output name=updated::${updated[@]}"
+          uniq_updated=($(echo "${updated[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
+          echo "${uniq_updated[@]}"
+          echo "::set-output name=updated::${uniq_updated[@]}"
       - name: Release Details
         id: release-details
         run: |
