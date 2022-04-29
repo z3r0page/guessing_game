@@ -81,6 +81,7 @@ jobs:
 
       - name: Access Changed Folders
         id: access-changed-folders
+        if: ${{ needs.BuildDev.outputs.updated }}
         run: |
           echo "Accessing changed folders"
           updated=(${{ steps.changed-folders.outputs.updated }})
@@ -91,6 +92,7 @@ jobs:
           echo "Updated versions"
       - name: Build OCI
         id: build_oci
+        if: ${{ needs.BuildDev.outputs.updated }}
         run: |
             updated=(${{ steps.changed-folders.outputs.updated }})
             version=${{ steps.gen_new_version.outputs.newversion }}
