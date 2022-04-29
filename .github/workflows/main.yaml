@@ -62,14 +62,15 @@ jobs:
           do
             cron_name=$(echo $cron | cut -d: -f1)
             cron_ver=$(echo $cron | cut -d: -f2)
-              for ch_cron in ${updated[@]}
-              do
-                if [[ "$ch_cron" == "$cron_name" ]]; then
-                  cron_ver=${{ steps.gen_new_version.outputs.newversion }}
-                fi
-              done
-            release_string+=("${cron_name}:${cron_ver}")
+              if [[ ! ${updated[*]} =~ $cron_name ]]; then
+                release_string+=("${cron_name}:${cron_ver}")
+              fi
           done
+          for cron in ${updated[*]}
+          do
+            release_string+=("${cron}:${{ steps.gen_new_version.outputs.newversion }}")
+          done
+
           echo "Old release body: ${array[@]}"
           echo "New release body: ${release_string[@]}"
 
