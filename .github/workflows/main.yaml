@@ -27,18 +27,6 @@ jobs:
         run: |
           echo "::set-output name=newversion::$(date +'%y.%m.%d%H%M' | sed 's/.$/0/')"
           echo "Will apply the following version: $VERSION"
-      - name: Release Details
-        id: release-details
-        run: |
-          echo "Release details: "
-          echo "Release Tag: ${GITHUB_REF_NAME}"
-          echo "::set-output name=branch_name::${GITHUB_REF_NAME}"
-          echo "${{ steps.get-release.outputs.body }}"
-          array=($(echo "${{ steps.get-release.outputs.body }}" | tr "," " "))
-          for cron in ${array[@]}
-          do
-            echo $cron
-          done
       - name: Changed folders
         id: changed-folders
         run: |
@@ -55,6 +43,36 @@ jobs:
           done
           echo "${updated[@]}"
           echo "::set-output name=updated::${updated[@]}"
+      - name: Release Details
+        id: release-details
+        run: |
+          echo "Release details: "
+          echo "Release Tag: ${GITHUB_REF_NAME}"
+          echo "::set-output name=branch_name::${GITHUB_REF_NAME}"
+          echo "${{ steps.get-release.outputs.body }}"
+          array=($(echo "${{ steps.get-release.outputs.body }}" | tr "," " "))
+          for cron in ${array[@]}
+          do
+            echo $cron
+          done
+          echo "Setting release body"
+          updated=(${{ steps.changed-folders.outputs.updated }})
+          release_string=()
+          for cron in ${array[@]}
+          do
+            cron_name=$(echo $cron | cut -d: -f1)
+            cron_ver=$(echo $cron | cut -d: -f2)
+              for ch_cron in ${updated[@]}
+              do
+                if [[ "$ch_cron" == "$cron_name" ]]; then
+                  cron_ver=${{ steps.gen_new_version.outputs.newversion }}
+                fi
+              done
+            release_string+=("${cron_name}:${cron_ver}")
+          done
+          echo "Old release body: ${array[@]}"
+          echo "New release body: ${release_string[@]}"
+
       - name: Access Changed Folders
         id: access-changed-folders
         run: |
@@ -64,6 +82,17 @@ jobs:
           do
             echo "$file"
           done
+          echo "Updated versions"
+      - name: Build OCI
+          id: build_oci
+          run: |
+            updated=(${{ steps.changed-folders.outputs.updated }})
+            version=${{ steps.gen_new_version.outputs.newversion }}
+            for cron in ${updated[@]}
+            do
+              echo "Building image: ${cron}:${version}"
+            done
+
 
   CreateGitHubRelease:
     name: Release ${{ github.event.repository.name }} to GitHub
