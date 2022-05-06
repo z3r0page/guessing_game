@@ -122,10 +122,10 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ github.token }}
         with:
-          tag_name: "pre-${{ needs.BuildDev.outputs.newversion }}"
+          tag_name: "${{ needs.BuildDev.outputs.newversion }}"
           commitish: "${{ needs.BuildDev.outputs.branch_name }}"
-          release_name: "pre-${{ needs.BuildDev.outputs.newversion }}"
-          prerelease: true
+          release_name: "${{ needs.BuildDev.outputs.newversion }}"
+          prerelease: false
           body: "${{ needs.BuildDev.outputs.new_release_string }}"
           draft: false
 
