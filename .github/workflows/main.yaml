@@ -8,7 +8,6 @@ on:
 jobs:
   BuildDev:
     runs-on: ubuntu-latest
-    continue-on-error: true
     outputs:
       newversion: ${{ steps.gen_new_version.outputs.newversion }}
       branch_name: ${{ steps.release-details.outputs.branch_name}}
@@ -38,6 +37,7 @@ jobs:
           echo "::set-output name=updated::${uniq_updated[@]}"
       - uses: cardinalby/git-get-release-action@v1
         id: get-release
+        continue-on-error: true
         with:
           latest: 1
           doNotFailIfNotFound: true
