@@ -48,7 +48,7 @@ jobs:
         id: gen_new_version
         run: |
           sha_short=$(git rev-parse --short HEAD)
-          version=$(date +'%y.%m.%d%H%M' | | sed 's/.$/0.'"$sha_short"'/')
+          version=$(date +'%y.%m.%d%H%M' | sed 's/.$/0.'"$sha_short"'/')
           echo "::set-output name=newversion::${version}"
           echo "Will apply the following version: $version"
       - name: Release Details
