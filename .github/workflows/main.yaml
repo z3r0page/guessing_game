@@ -19,8 +19,7 @@ jobs:
       - uses: cardinalby/git-get-release-action@v1
         id: get-release
         with:
-          prerelease: true
-          releaseNameRegEx: "pre-*"
+          latest: 1
           doNotFailIfNotFound: true
         env:
           GITHUB_TOKEN: ${{ github.token }}
