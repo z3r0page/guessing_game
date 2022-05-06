@@ -12,6 +12,7 @@ jobs:
       newversion: ${{ steps.gen_new_version.outputs.newversion }}
       branch_name: ${{ steps.release-details.outputs.branch_name}}
       new_release_string: ${{ steps.release-details.outputs.new_release_string }}
+      updated: ${{ steps.changed-folders.outputs.updated }}
     steps:
       - name: Git Checkout
         uses: actions/checkout@v1
