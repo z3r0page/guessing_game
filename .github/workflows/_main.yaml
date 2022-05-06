@@ -1,9 +1,7 @@
 on:
   push:
     branches:
-      - "*"
-  inputs:
-    token: "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"
+      - master
 
 jobs:
   BuildDev:
