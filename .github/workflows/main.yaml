@@ -8,6 +8,7 @@ on:
 jobs:
   BuildDev:
     runs-on: ubuntu-latest
+    continue-on-error: true
     outputs:
       newversion: ${{ steps.gen_new_version.outputs.newversion }}
       branch_name: ${{ steps.release-details.outputs.branch_name}}
