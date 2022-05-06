@@ -19,19 +19,6 @@ jobs:
       - name: Get Changed Files
         id: changed-files
         uses: jitterbit/get-changed-files@v1
-      - uses: cardinalby/git-get-release-action@v1
-        id: get-release
-        with:
-          latest: 1
-          doNotFailIfNotFound: true
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
-      - name: Generate new version number
-        id: gen_new_version
-        run: |
-          version=$(date +'%y.%m.%d%H%M' | sed 's/.$/0/')
-          echo "::set-output name=newversion::${version}"
-          echo "Will apply the following version: $version"
       - name: Changed folders
         id: changed-folders
         run: |
@@ -49,6 +36,19 @@ jobs:
           uniq_updated=($(echo "${updated[@]}" | tr ' ' '\n' | sort -u | tr '\n' ' '))
           echo "${uniq_updated[@]}"
           echo "::set-output name=updated::${uniq_updated[@]}"
+      - uses: cardinalby/git-get-release-action@v1
+        id: get-release
+        with:
+          latest: 1
+          doNotFailIfNotFound: true
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+      - name: Generate new version number
+        id: gen_new_version
+        run: |
+          version=$(date +'%y.%m.%d%H%M' | sed 's/.$/0/')
+          echo "::set-output name=newversion::${version}"
+          echo "Will apply the following version: $version"
       - name: Release Details
         id: release-details
         run: |
