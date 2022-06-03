@@ -56,17 +56,17 @@ jobs:
   DeployDev:
     runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v1
     - name: Create YAML
       run: |
-        cat <<EOF > patch.yaml
-        ${{ github.event.inputs.mapping }}:
-            ${{ github.event.inputs.configPath }}:
-                scope:
-                  ${{ github.event.inputs.scope }}:
-                      ${{ github.event.inputs.key }}:
-                          dtype: ${{ github.event.inputs.dataType }}
-                          value: ${{ github.event.inputs.value }}
-        EOF
+        ./test.py -m ${{ github.event.inputs.mapping }} \
+                  -c ${{ github.event.inputs.configPath }} \
+                  -n ${{ github.event.inputs.namespaces }} \
+                  -k ${{ github.event.inputs.key }} \
+                  -s ${{ github.event.inputs.scope }} \
+                  -d ${{ github.event.inputs.dataType }} \
+                  -v ${{ github.event.inputs.value }} \
+                  -o patch.yaml
         echo "Display contents"
         cat patch.yaml
 
