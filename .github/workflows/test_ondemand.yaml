@@ -1,0 +1,66 @@
+name: Update Config Section(Path)
+
+
+on:
+  workflow_dispatch:
+    inputs:
+      mapping:
+        description: 'Mapping(configMapping|secretsMapping)'
+        type: choice
+          - configMapping
+          - secretsMapping
+        default: 'secretsMapping'
+        required: true
+      configPath:
+        description: 'Config path'
+        default: ''
+        required: true
+      scope:
+        description: 'Config scope'
+        default: 'global'
+        type: choice
+          - global
+          - auto
+        required: true
+      key:
+        description: 'Config key'
+        default: ''
+        required: true
+      value:
+        description: 'Config Value'
+        default: ''
+        required: true
+      dataType:
+        description: 'Config datatype'
+        default: 'str'
+        type: choice
+          - str
+          - int
+          - float
+          - dict
+          - list
+        required: true
+      delete:
+        description: 'Delete existing key'
+        default: false
+        type: boolean
+
+
+jobs:
+  DeployDev:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create YAML
+      run: |
+        cat <<EOF > patch.yaml
+        ${{ github.event.inputs.mapping }}:
+            ${{ github.event.inputs.configPath }}:
+                scope:
+                  ${{ github.event.inputs.scope }}:
+                      ${{ github.event.inputs.key }}:
+                          dtype: ${{ github.event.inputs.dataType }}
+                          value: ${{ github.event.inputs.value }}
+        EOF
+        echo "Display contents"
+        cat patch.yaml
+
