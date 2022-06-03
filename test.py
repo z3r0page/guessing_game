@@ -32,9 +32,6 @@ if __name__ == '__main__':
                         help='config value')
     parser.add_argument('-t', dest='datatype', type=str, default='str',
                         help='config data type')
-    parser.add_argument('-d', dest='delete', action='store_true',
-                        default=False,
-                        help='config delete')
     parser.add_argument('-o', dest='outfile', type=str, default='patch.yaml',
                         help='output file path')
     args = parser.parse_args()

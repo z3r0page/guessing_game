@@ -64,7 +64,7 @@ jobs:
                   -n ${{ github.event.inputs.namespaces }} \
                   -k ${{ github.event.inputs.key }} \
                   -s ${{ github.event.inputs.scope }} \
-                  -d ${{ github.event.inputs.dataType }} \
+                  -t ${{ github.event.inputs.dataType }} \
                   -v ${{ github.event.inputs.value }} \
                   -o patch.yaml
         echo "Display contents"
