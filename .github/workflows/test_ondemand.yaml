@@ -7,6 +7,7 @@ on:
       mapping:
         description: 'Mapping(configMapping|secretsMapping)'
         type: choice
+        options:
           - configMapping
           - secretsMapping
         default: 'secretsMapping'
@@ -19,6 +20,7 @@ on:
         description: 'Config scope'
         default: 'global'
         type: choice
+        options:
           - global
           - auto
         required: true
@@ -34,6 +36,7 @@ on:
         description: 'Config datatype'
         default: 'str'
         type: choice
+        options:
           - str
           - int
           - float
