@@ -16,6 +16,9 @@ on:
         description: 'Config path'
         default: ''
         required: true
+      namespaces:
+        description: 'Comma separated namespace'
+        default: 'app-namespaces'
       scope:
         description: 'Config scope'
         default: 'global'
