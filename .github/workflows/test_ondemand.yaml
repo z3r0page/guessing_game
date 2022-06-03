@@ -67,7 +67,7 @@ jobs:
         echo "Display contents"
         cat patch.yaml
 
-        if [[ ${{ github.event.inputs.delete }} == 'true'; then
+        if [[ ${{ github.event.inputs.delete }} == 'true' ]]; then
             echo "Delete enabled"
         else
             echo "Delete disabled"
