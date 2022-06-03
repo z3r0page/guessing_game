@@ -91,7 +91,7 @@ jobs:
       with:
         token: ${{ github.token }}
         commit-message: Update config
-        committer: ${{ github.actor }} <noreply@github.com>
+        committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
         branch: config-patches
