@@ -1,0 +1,10 @@
+secretsMapping:
+  slack:
+    namespaces:
+    - app-namespaces
+    scope:
+      global:
+        email:
+          dtype: str
+          key: email
+          value: a@b.com
