@@ -1,0 +1,108 @@
+name: Add/Remove Config Key
+
+on:
+  workflow_dispatch:
+    inputs:
+      environment:
+        description: 'Environment'
+        type: choice
+        options:
+          - dev
+          - stg
+          - prd
+        default: 'dev'
+        required: true
+      mapping:
+        description: 'Mapping'
+        type: choice
+        options:
+          - configMapping
+          - secretsMapping
+        default: 'secretsMapping'
+        required: true
+      configPath:
+        description: 'Config path'
+        default: ''
+        required: true
+      namespaces:
+        description: 'Comma separated namespace'
+        default: 'app-namespaces'
+      scope:
+        description: 'Config scope'
+        default: 'global'
+        type: choice
+        options:
+          - global
+          - auto
+        required: true
+      key:
+        description: 'Config key'
+        default: ''
+        required: true
+      value:
+        description: 'Config Value'
+        default: ''
+        required: true
+      dataType:
+        description: 'Config datatype'
+        default: 'str'
+        type: choice
+        options:
+          - str
+          - int
+          - float
+          - dict
+          - list
+        required: true
+      delete:
+        description: 'Delete existing key'
+        default: false
+        type: boolean
+
+jobs:
+  GeneratePatchFile:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+      name: Git Checkout
+
+    - name: Create Yaml patch file
+      run: |
+        python test.py -m ${{ github.event.inputs.mapping }} \
+                  -c ${{ github.event.inputs.configPath }} \
+                  -n ${{ github.event.inputs.namespaces }} \
+                  -k ${{ github.event.inputs.key }} \
+                  -s ${{ github.event.inputs.scope }} \
+                  -t ${{ github.event.inputs.dataType }} \
+                  -v ${{ github.event.inputs.value }} \
+                  -o patch.yaml
+        echo "Display contents"
+        cat patch.yaml
+        cp patch.yaml new_file.yaml
+
+    - name: Cleanup
+      run: rm patch.yaml
+
+    - name: Create Pull Request
+      id: create_pull
+      uses: peter-evans/create-pull-request@v4
+      with:
+        token: ${{ github.token }}
+        commit-message: Update config
+        committer: GitHub <noreply@github.com>
+        author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
+        signoff: false
+        branch: config-patches
+        delete-branch: true
+        title: 'Add/Remove Single config key'
+        body: |
+          Updated ${{ github.event.inputs.environment }} config
+          - Added key ${{ github.event.inputs.key }}
+        labels: |
+          ${{ github.event.inputs.environment }}
+          automated pr
+        assignees: ${{ github.actor }}
+        draft: false
+        base: development
+
+
