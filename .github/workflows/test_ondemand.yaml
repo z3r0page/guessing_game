@@ -59,7 +59,7 @@ jobs:
     - uses: actions/checkout@v1
     - name: Create YAML
       run: |
-        ./test.py -m ${{ github.event.inputs.mapping }} \
+        python test.py -m ${{ github.event.inputs.mapping }} \
                   -c ${{ github.event.inputs.configPath }} \
                   -n ${{ github.event.inputs.namespaces }} \
                   -k ${{ github.event.inputs.key }} \
