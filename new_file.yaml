@@ -1,0 +1,10 @@
+secretsMapping:
+  cluster:
+    namespaces:
+    - app-namespaces
+    scope:
+      global:
+        secret:
+          dtype: str
+          key: secret
+          value: password
