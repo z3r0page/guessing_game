@@ -69,7 +69,7 @@ jobs:
       name: Git Checkout
 
     - name: Add Mask
-      id: hide-secret
+      id: add-mask
       run: |
         SECRET=$(jq -r '.inputs.value' $GITHUB_EVENT_PATH)
         echo "Before Mask"
@@ -81,7 +81,7 @@ jobs:
         echo "::add-mask::${{ github.event.inputs.value }}"
 
     - name: Gen Timestamp
-      id: gen_timestamp
+      id: gen-timestamp
       run: |
         timestamp=$(date +'%y%m%d%H%M')
         echo "::set-output name=timestamp::${timestamp}"
@@ -94,7 +94,7 @@ jobs:
                   -k ${{ github.event.inputs.key }} \
                   -s ${{ github.event.inputs.scope }} \
                   -t ${{ github.event.inputs.dataType }} \
-                  -v ${{ steps.hide-secret.outputs.secret }} \
+                  -v ${{ steps.add-mask.outputs.secret }} \
                   -o patch.yaml
         echo "Display contents"
         cat patch.yaml
@@ -112,7 +112,7 @@ jobs:
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
-        branch: config-patch-${{ github.actor }}-${{ steps.gen_timestamp.outputs.timestamp }}
+        branch: config-patch-${{ github.actor }}-${{ steps.gen-timestamp.outputs.timestamp }}
         delete-branch: true
         title: 'Add/Remove Single config key'
         body: |
