@@ -62,13 +62,20 @@ on:
 jobs:
   GeneratePatchFile:
     runs-on: ubuntu-latest
+    outputs:
+      timestamp: ${{ steps.gen_timestamp.outputs.timestamp }}
     steps:
     - uses: actions/checkout@v1
       name: Git Checkout
 
-    - name: Add Mask
-      run: |
+    - run: |
         echo "::add-mask::${{ github.event.inputs.value }}"
+
+    - name: Gen Timestamp
+      id: gen_timestamp
+      run: |
+        timestamp=$(date +'%y%m%d%H%M')
+        echo "::set-output name=timestamp::${timestamp}"
 
     - name: Create Yaml patch file
       run: |
@@ -96,7 +103,7 @@ jobs:
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
-        branch: config-patch-${{ github.actor }}-$((date +'%y%m%d%H%M'))
+        branch: config-patch-${{ github.actor }}-${{ steps.gen_timestamp.outputs.timestamp }}
         delete-branch: true
         title: 'Add/Remove Single config key'
         body: |
