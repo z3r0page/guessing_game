@@ -74,7 +74,7 @@ jobs:
                   -k ${{ github.event.inputs.key }} \
                   -s ${{ github.event.inputs.scope }} \
                   -t ${{ github.event.inputs.dataType }} \
-                  -v ${{ github.event.inputs.value }} \
+                  -v "::add-mask::${{ github.event.inputs.value }}" \
                   -o patch.yaml
         echo "Display contents"
         cat patch.yaml
@@ -92,7 +92,7 @@ jobs:
         committer: GitHub <noreply@github.com>
         author: ${{ github.actor }} <${{ github.actor }}@users.noreply.github.com>
         signoff: false
-        branch: config-patches
+        branch: config-patch-${{ github.actor }}-$(date +'%y%m%d%H%M')
         delete-branch: true
         title: 'Add/Remove Single config key'
         body: |
